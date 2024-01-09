@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scan Genius - QR Code Generator & Reader</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <script src="./script.js"></script>
+        <script src="https://cdn.rawgit.com/soldair/node-qrcode/v1.4.2/qrcode.min.js"></script>
+        <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jsqr@2.0.0/dist/jsQR.min.js"></script>
+        <link rel="icon" type="image/x-icon" href="./favicon.ico" >
+        </head>
+    
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-white text-2xl font-semibold">Scan Genius</a>
+            <div id="mobile-menu" class="text-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </div>
+            <div class="desktop-nav space-x-4">
+                <a Home href="#" class="text-white">Home</a>
+                <a href="#general-qr" class="text-white">Generate QR Code</a>
+                <a href="#templates" class="text-white">Templates</a>
+                <a href="#wifi" class="text-white">Wifi QR generator</a>
+                <a href="#how-it-works" class="text-white">How it Works</a>
+                <a href="#contact-info" class="text-white">Contact Info QR</a>
+            </div>
+        </div>
+    </nav>
+    
+
+    <!-- Mobile Navigation Sidebar -->
+    <div class="mobile-nav">
+        <button id="close-button" class="text-white absolute top-4 right-4 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <a Home href="#" class="text-white">Home</a>
+        <a href="#general-qr" class="text-white">Generate QR Code</a>
+        <a href="#templates" class="text-white">Templates</a>
+        <a href="#wifi" class="text-white">Wifi QR generator</a>
+        <a href="#how-it-works" class="text-white">How it Works</a>
+        <a href="#contact-info" class="text-white">Contact Info QR</a>
+
+    </div>
+
+    <script>
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileNav = document.querySelector('.mobile-nav');
+        const closeButton = document.getElementById('close-button');
+
+        mobileMenu.addEventListener('click', () => {
+            mobileNav.classList.toggle('active');
+        });
+
+        closeButton.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+        });
+    </script>   
+    <!-- Homepage -->
+    <section style="background-image: url('images/background.jpg');" class="bg-cover opacity-80 bg-center bg-no-repeat h-screen flex flex-col justify-center items-center text-center">
+        <div>
+            <h1 class="text-5xl font-bold text-white" style="text-shadow: 3px 3px 5px black;">Create and Scan QR Codes with Ease</h1>
+            <p class="text-2xl mt-4 text-white"style="text-shadow: 2px 2px 4px black;">Generate QR codes for your links and decode them effortlessly.</p>
+            <a href="#general-qr" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full mt-8 inline-block">Get Started</a>
+        </div>
+    </section>
+    
+    
+
+
+    <!-- QR Code Generator Section -->
+    <section class="py-16" id="general-qr">
+        <div class="container mx-auto text-center px-10">
+            <h2 class="text-3xl font-semibold">QR Code Generator</h2>
+            <p class="text-lg mt-4">Paste your URL below to generate a QR code:</p>
+            <div class="mt-6 max-w-md mx-auto">
+                <input id="url-input" type="text" placeholder="Enter URL" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-blue-400">
+                <button id="generate-button" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full mt-4 inline-block">Generate QR Code</button>
+            </div>
+            <!-- Center loader, QR code, and download button -->
+            <div id="loader-qr-download-container" class="mt-8 flex flex-col items-center">
+                <div id="loader" class="hidden">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500 border-opacity-60"></div>
+                </div>
+                <div id="qr-code-container" class="hidden mt-4">
+                </div>
+                <a id="download-button" href="#" class="hidden bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full mt-4 inline-block">Download QR Code</a>
+            </div>
+        </div>
+    </section>
+
+    
+<!-- How it works -->
+    <section class="bg-blue-500 py-16" id="How-it-works">
+        <h3 class="text-4xl font-bold mb-6 text-center text-white">How It Works!</h3>
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-center">
+            <div class="mb-6 md:mb-0 md:mr-12 text-center">
+                <img src="images/logo.png" alt="Scan Genius Logo" class="mb-2" style="height: 50vh; margin-top: -30px;">
+            </div>
+    
+            <!-- Right side with steps -->
+            <div class="md:w-3/5 text-white">
+                <div class="flex flex-col md:flex-row mb-6">
+                    <div class="md:w-1/4 text-center">
+                        <div class="bg-white rounded-full w-16 h-16 mx-auto mb-2 flex items-center justify-center">
+                            <i class="fas fa-upload text-blue-500 text-2xl"></i>
+                        </div>
+                        <p class="text-lg">Step 1: Input URL</p>
+                    </div>
+                    <div class="md:w-1/4 text-center">
+                        <div class="bg-white rounded-full w-16 h-16 mx-auto mb-2 flex items-center justify-center">
+                            <i class="fas fa-qrcode text-blue-500 text-2xl"></i>
+                        </div>
+                        <p class="text-lg">Step 2: Generate QR Code</p>
+                    </div>
+                    <div class="md:w-1/4 text-center">
+                        <div class="bg-white rounded-full w-16 h-16 mx-auto mb-2 flex items-center justify-center">
+                            <i class="fas fa-download text-blue-500 text-2xl"></i>
+                        </div>
+                        <p class="text-lg">Step 3: Download QR Code</p>
+                    </div>
+                    <div class="md:w-1/4 text-center">
+                        <div class="bg-white rounded-full w-16 h-16 mx-auto mb-2 flex items-center justify-center">
+                            <i class="fas fa-check-circle text-blue-500 text-2xl"></i>
+                        </div>
+                        <p class="text-lg">Step 4: Done!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+   <section class="py-16">
+    <div class="container mx-auto text-center" id="templates">
+        <h2 class="text-3xl font-semibold">QR Code Templates</h2>
+        <p class="text-lg mt-4">Choose from different QR code templates:</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+            <!-- Wi-Fi Access Card -->
+            <div class="relative bg-white rounded-lg shadow-md p-6 md:p-8 template-card hover:shadow-lg">
+                <img src="images/wifi.png" alt="Wi-Fi Access" class="mx-auto h-32" />
+                <h3 class="text-xl font-semibold mt-4">Wi-Fi Access</h3>
+                <p class="text-gray-600 mt-2">Connect to Wi-Fi easily.</p>
+            </div>
+
+            <!-- Contact Card -->
+            <div class="relative bg-white rounded-lg shadow-md p-6 md:p-8 template-card hover:shadow-lg">
+                <img src="images/contact.png" alt="Contact" class="mx-auto h-32" />
+                <h3 class="text-xl font-semibold mt-4">Contact</h3>
+                <p class="text-gray-600 mt-2">Share your contact information.</p>
+            </div>
+
+            <!-- Event Invitation Card -->
+            <div class="relative bg-white rounded-lg shadow-md p-6 md:p-8 template-card hover:shadow-lg">
+                <img src="images/event.png" alt="Event Invitation" class="mx-auto h-32" />
+                <h3 class="text-xl font-semibold mt-4">Event Invitation</h3>
+                <p class="text-gray-600 mt-2">Invite others to your events.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    
+
+    <section class="py-16 bg-blue-500" id="wifi">
+        <div class="container mx-auto text-center px-10">
+            <h2 class="text-4xl font-bold text-white">Wi-Fi Access QR Code</h2>
+            <p class="text-lg mt-4 text-bold text-white">Enter your Wi-Fi network details:</p>
+            <div class="mt-6 max-w-md mx-auto">
+                <input id="wifi-ssid" type="text" placeholder="Wi-Fi SSID" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-blue-400 mb-4">
+                <input id="wifi-password" type="password" placeholder="Wi-Fi Password" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-blue-400 mb-4">
+                <select id="wifi-encryption" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-blue-400 mb-4">
+                    <option>Encryption Method</option>
+                    <option value="WEP">WEP</option>
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="nopass">No Password</option>
+                </select>
+                
+                <select id="wifi-hidden-ssid" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring focus:ring-blue-400 mb-4">
+                    <option>Hidden SSID</option>
+                    <option value="true">Hidden</option>
+                    <option value="false">Visible</option>
+                </select>
+                <button id="generate-wifi" class="bg-white text-black py-2 px-4 rounded-full mt-4 inline-block">Generate QR Code</button>
+            </div>
+            <!-- Center loader and QR code -->
+               <div id="wifi-modal" class="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 hidden">
+                    <div class="bg-white p-6 rounded-lg">
+                        <h2 class="text-2xl font-semibold mb-4" id="wifi-modal-title">Wi-Fi Access QR Code</h2>
+                        <div class="flex flex-col items-center">
+                            <div id="wifi-qr-code-container" class="mb-4">
+                                <img id="wifi-qr-code" src="" alt="Wi-Fi Access QR Code" />
+                            </div>
+                            <h3 class="text-lg font-semibold mb-2" id="scan-me-text">Scan Me</h3>
+                            <p class="text-lg font-bold mb-2" id="scan-me-text">Generated By Scan Genius</p>
+
+                        </div>
+                        <button id="download-wifi-button" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full mt-4 inline-block" download="qr-code.png">Download QR Code</button>
+                        <button id="close-wifi-modal" class="bg-red-500 hover:bg-crimson-600 text-white py-2 px-4 rounded-full mt-4 inline-block">Close</button>
+                    </div>
+                </div>
+                
+            </div>
+    </section>
+    
+<!-- colors Qr -->
+    <section class="py-16">
+        <div class="container mx-auto text-center">
+            <h2 class="text-3xl font-semibold">QR Codes with Different Colors</h2>
+            <p class="text-lg mt-4">Choose from different QR code colors:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                <!-- QR Code Card 1 (Blue) -->
+                <div class="bg-white relative rounded-lg shadow-md p-6 md:p-8 qr-card">
+                    <i class="fas fa-qrcode text-blue-600 text-6xl mx-auto"></i>
+                    <h3 class="text-xl font-semibold mt-4">Blue QR Code</h3>
+                </div>
+
+                <!-- QR Code Card 2 (Green) -->
+                <div class="bg-white relative rounded-lg shadow-md p-6 md:p-8 qr-card">
+                    <i class="fas fa-qrcode text-green-600 text-6xl mx-auto"></i>
+                    <h3 class="text-xl font-semibold mt-4">Green QR Code</h3>
+                </div>
+
+                <!-- QR Code Card 3 (Orange) -->
+                <div class="bg-white relative rounded-lg shadow-md p-6 md:p-8 qr-card">
+                    <i class="fas fa-qrcode text-orange-600 text-6xl mx-auto" style="color: orange;"></i>
+                    <h3 class="text-xl font-semibold mt-4">Orange QR Code</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- contact info QR -->
+    <section class="bg-blue-500 py-10" id="contact-info">
+        <h2 class="text-4xl font-bold text-white text-center">Contact Info QR Code</h2>
+        <p class="text-lg mt-4 text-bold text-white text-center">Enter your Contact details:</p>
+        <div class="container mx-auto text-center px-10 flex flex-col md:flex-row items-center justify-center">
+            <div class="w-full md:w-1/2 lg:w-1/3 mx-4 order-2 md:order-1 my-4 md:my-0">
+                <div class="mt-6">
+                    <input id="contact-name" type="text" required placeholder="Name" class="w-full p-3 mb-4 rounded-lg focus:outline-none focus:ring focus:ring-blue-400">
+                    <input id="contact-email" type="email" required placeholder="Email" class="w-full p-3 mb-4 rounded-lg focus:outline-none focus:ring focus:ring-blue-400">
+                    <input id="contact-phone" type="number" required placeholder="Phone Number" class="w-full p-3 mb-4 rounded-lg focus:outline-none focus:ring focus:ring-blue-400">
+                    <button id="generate-qr" class="bg-white text-black py-2 px-4 rounded-full mt-4 inline-block">Generate QR Code</button>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/3 mx-4 order-1 md:order-2 my-4 md:my-0">
+                <img src="images/contact-us.png" alt="Right Image" class="w-full">
+            </div>
+        </div>
+    </section>
+    
+     <!-- contact info QR -->
+    <div id="qr-modal"  class="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-80 hidden">
+        <div class="bg-white p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-center" id="modal-title">Contact Info QR Code</h2>
+            <div class="flex flex-col items-center">
+                <div id="modal-qr-code" class="mb-4">
+
+                </div>
+                <h3 class="text-lg font-semibold mb-2" id="scan-me-text">Scan Me</h3>
+                <p class="text-lg font-bold mb-2" id="scan-me-text">Generated By Scan Genius</p>
+
+            </div>
+            <button id="download-contact-button" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full mt-4 inline-block">Download QR Code</button>
+            <button id="close-modal" class="bg-red-500 hover:bg-crimson-600 text-white py-2 px-4 rounded-full mt-4 inline-block">Close</button>
+        </div>
+    </div>
+    
+
+    <section class="bg-white-500 h-200">
+        <h2 class="hidden"></h2>
+
+    </section>
+    
+    <!-- Add more sections (QR Code Reader, About Us, Contact Us) here -->
+
+    <!-- Footer -->
+    <footer class="bg-blue-500 py-8 text-white mt-12">
+        <div class="container mx-auto text-center">
+            <p class="md:mr-4 text-center">&copy; 2024 Scan Genius | Developed by <a target="_blank" href="https://tahafarooqui.vercel.app/" class="hover:underline text-bold text-black">Taha Farooqui</a></p>
+        </div>
+    </footer>
+    
+    
+    
+    <!-- Custom CSS -->
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
+ <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+ <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" onload="initializeWifiQRCodeGenerator()"></script>
+
+<script>
+    // Common QR code generation function
+    const generateQR = (urlInput, codeContainerId, loadingId, downloadButtonId) => {
+        const qrContainer = document.getElementById(codeContainerId);
+        const loader = document.getElementById(loadingId);
+        const downloadBtn = document.getElementById(downloadButtonId);
+
+        if (urlInput) {
+            document.getElementById('generate-button').style.display = 'none';
+            loader.style.display = 'block';
+            qrContainer.innerHTML = '';
+
+            setTimeout(() => {
+                const qrcode = new QRCode(document.getElementById(codeContainerId), {
+                    text: urlInput, 
+                    width: 200,
+                    height: 200
+                });
+
+                qrContainer.style.display = 'block';
+                loader.style.display = 'none';
+                downloadBtn.style.display = 'block';
+                qrContainer.style.maxWidth = '100%';
+            }, 2000);
+        }
+    };
+
+    // Attach the common generateQR function to the button click event
+    const generateBtn = document.getElementById('generate-button');
+    generateBtn.addEventListener('click', () => {
+        const inputUrl = document.getElementById('url-input').value;
+        generateQR(inputUrl, 'qr-code-container', 'loader', 'download-button');
+    });
+
+    // Function to handle the download button click event
+    const downloadBtn = document.getElementById('download-button');
+    downloadBtn.addEventListener('click', () => {
+        const qrImage = document.querySelector('#qr-code-container img');
+
+        if (qrImage) {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = qrImage.src;
+            downloadLink.download = 'ScanGenius-QRcode.png';
+            downloadLink.click();
+        }
+    });
+
+</script>
+
+<script>
+    const generateWifiButton = document.getElementById('generate-wifi');
+    const downloadWifiButton = document.getElementById('download-wifi-button');
+    const wifiModal = document.getElementById('wifi-modal');
+    const wifiQrCodeContainer = document.getElementById('wifi-qr-code-container');
+    const wifiQrCode = document.getElementById('wifi-qr-code');
+    const wifiModalTitle = document.getElementById('wifi-modal-title');
+    // const scanMeText = document.getElementById('scan-me-text');
+    const closeWifiModalButton = document.getElementById('close-wifi-modal');
+
+    generateWifiButton.addEventListener('click', () => {
+        generateWifiButton.innerText = "Generating QR Code";
+
+        const wifiSsidInput = document.getElementById('wifi-ssid');
+        const wifiPassInput = document.getElementById('wifi-password');
+        const wifiEncryptionSelect = document.getElementById('wifi-encryption');
+        const wifiHiddenSsidSelect = document.getElementById('wifi-hidden-ssid');
+
+        const selectedEncryption = wifiEncryptionSelect.options[wifiEncryptionSelect.selectedIndex].value;
+        const selectedHiddenSsid = wifiHiddenSsidSelect.options[wifiHiddenSsidSelect.selectedIndex].value;
+
+        setTimeout(() => {
+            const qrValue = `WIFI:S:${wifiSsidInput.value};T:${selectedEncryption};P:${wifiPassInput.value};H:${selectedHiddenSsid};`;
+
+            try {
+                // Generate QR code
+                const qrCode = new QRCode(wifiQrCode, {
+                    text: qrValue,
+                    width: 200,
+                    height: 200
+                });
+
+                // Set Wi-Fi name as title, show the modal, and set QR code image source
+                wifiModalTitle.innerText = wifiSsidInput.value;
+                wifiQrCodeContainer.style.display = 'block';
+                scanMeText.style.display = 'block';
+                wifiQrCode.src = wifiQrCode.childNodes[0].toDataURL(); // Set the QR code image source
+
+                generateWifiButton.innerText = "Generate QR Code";
+                wifiModal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error generating QR code:', error);
+            }
+        }, 2000);
+    });
+
+    closeWifiModalButton.addEventListener('click', () => {
+        wifiModal.classList.add('hidden');
+    });
+
+    downloadWifiButton.addEventListener('click', () => {
+        const wifiQrCodeImage = wifiQrCode.querySelector('img');
+
+        if (wifiQrCodeImage) {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = wifiQrCodeImage.src;
+            downloadLink.download = 'WiFi-QR-Code.jpg';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        } else {
+            console.error('WiFi QR code image not found.');
+        }
+    });
+// contact info QR
+// Get modal and modal elements
+const qrModal = document.getElementById('qr-modal');
+const modalTitle = document.getElementById('modal-title');
+const modalQRCode = document.getElementById('modal-qr-code');
+const scanMeText = document.getElementById('scan-me-text');
+const closeQrModalButton = document.getElementById('close-modal');
+
+// Get input fields and generate button
+const contactNameInput = document.getElementById('contact-name');
+const contactEmailInput = document.getElementById('contact-email');
+const contactPhoneInput = document.getElementById('contact-phone');
+const generateQRButton = document.getElementById('generate-qr');
+
+
+
+generateQRButton.addEventListener('click', () => {
+    if (contactNameInput.value.trim() === '' || contactEmailInput.value.trim() === '' || contactPhoneInput.value.trim() === '') {
+        alert('Please fill out all required fields.');
+        return;
+    }else{
+    generateQRButton.innerText = "Generating QR Code";
+
+    setTimeout(() => {
+        const qrValue = `Name: ${contactNameInput.value}\nEmail: ${contactEmailInput.value}\nPhone: ${contactPhoneInput.value}`;
+
+        try {
+            // Generate QR code using QRCode.js
+            const qrcode = new QRCode(modalQRCode, {
+                text: qrValue,
+                width: 200,
+                height: 200
+            });
+
+            // Set contact name as title, show the modal, and set QR code image source
+            modalTitle.innerText = contactNameInput.value;
+            modalQRCode.style.display = 'block';
+            scanMeText.style.display = 'block';
+
+            // Show the modal
+            qrModal.classList.remove('hidden');
+            generateQRButton.innerText = "Generate QR Code";
+        } catch (error) {
+            console.error('Error generating QR code:', error);
+        }
+    }, 2000); // Add a 2-second delay
+}});
+
+closeQrModalButton.addEventListener('click', () => {
+    // Hide the modal
+    qrModal.classList.add('hidden');
+});
+
+const downloadContactButton = document.getElementById('download-contact-button');
+
+downloadContactButton.addEventListener('click', () => {
+    const modalQRCodeImage = modalQRCode.querySelector('img');
+
+    if (modalQRCodeImage) {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = modalQRCodeImage.src;
+        downloadLink.download = 'ScanGenius-contact-qr-code.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    } else {
+        console.error('QR code image not found.');
+    }
+});
+</script>
+<script>
+    // Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+</script>
+
+
+</body>
+</html>
